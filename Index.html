@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentaBikeSanLuis - Carrito de Reservas</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --verde: #2ecc71;
+            --verde-oscuro: #27ae60;
+            --amarillo: #f1c40f;
+            --texto-oscuro: #2c3e50;
+            --blanco: #ffffff;
+            --gris: #f4f7f6;
+        }
+
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--gris); }
+
+        /* --- ICONO CARRITO FLOTANTE --- */
+        .cart-icon {
+            position: fixed; top: 20px; right: 20px;
+            background: var(--verde); color: white;
+            padding: 15px; border-radius: 50%;
+            cursor: pointer; z-index: 1100; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .cart-count {
+            position: absolute; top: -5px; right: -5px;
+            background: var(--amarillo); color: var(--texto-oscuro);
+            font-size: 12px; font-weight: bold; padding: 2px 6px; border-radius: 50%;
+        }
+
+        /* --- SIDEBAR DEL CARRITO --- */
+        .cart-sidebar {
+            position: fixed; right: -400px; top: 0;
+            width: 350px; height: 100%; background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transition: 0.3s; z-index: 1200; padding: 20px;
+            display: flex; flex-direction: column;
+        }
+        .cart-sidebar.active { right: 0; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gris); padding-bottom: 10px; }
+        .cart-items { flex-grow: 1; overflow-y: auto; margin-top: 20px; }
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .btn-checkout { background: var(--verde); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+
+        /* --- CARDS DE PRECIOS --- */
+        .container { max-width: 1000px; margin: 100px auto; padding: 20px; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .btn-add { background: var(--texto-oscuro); color: white; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; transition: 0.3s; }
+        .btn-add:hover { background: var(--verde); }
+    </style>
+</head>
+<body>
+
+    <div class="cart-icon" onclick="toggleCart()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cart-count">0</span>
+    </div>
+
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>Tu Reserva</h3>
+            <i class="fas fa-times" style="cursor:pointer" onclick="toggleCart()"></i>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <p style="text-align:center; color:#999;">El carrito está vacío</p>
+        </div>
+        <div class="cart-footer">
+            <h4>Total: $<span id="cart-total">0</span>.00</h4>
+            <button class="btn-checkout" onclick="irAPagar()">Proceder al Pago</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 style="text-align: center; margin-bottom: 40px;">Selecciona tu vehículo</h2>
+        <div class="pricing-grid">
+            <div class="card">
+                <i class="fas fa-bicycle" style="font-size: 3rem; color: var(--verde);"></i>
+                <h3>Bicicleta Urbana</h3>
+                <p>$60.00 / hora</p>
+                <button class="btn-add" onclick="agregarAlCarrito('Bicicleta Urbana', 60)">
+                    <i class="fas fa-plus"></i> Añadir
+                </button>
+            </div>
+            <div class="card">
+                <i class="fas fa-bolt" style="font-size: 3rem; color: var(--amarillo);"></i>
+                <h3>Scooter Pro</h3>
+                <p>$80.00 / hora</p>
+                <button class="btn-add" onclick="agregarAlCarrito('Scooter Pro', 80)">
+                    <i class="fas fa-plus"></i> Añadir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let carrito = [];
+        let total = 0;
+
+        function toggleCart() {
+            document.getElementById('cart-sidebar').classList.toggle('active');
+        }
+
+        function agregarAlCarrito(nombre, precio) {
+            carrito.push({ nombre, precio });
+            actualizarInterfaz();
+            // Abrir el carrito automáticamente al añadir
+            if(!document.getElementById('cart-sidebar').classList.contains('active')) {
+                toggleCart();
+            }
+        }
+
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarInterfaz();
+        }
+
+        function actualizarInterfaz() {
+            const listaItems = document.getElementById('cart-items');
+            const contador = document.getElementById('cart-count');
+            const totalTxt = document.getElementById('cart-total');
+            
+            listaItems.innerHTML = "";
+            total = 0;
+
+            if (carrito.length === 0) {
+                listaItems.innerHTML = '<p style="text-align:center; color:#999;">El carrito está vacío</p>';
+            }
+
+            carrito.forEach((item, index) => {
+                total += item.precio;
+                listaItems.innerHTML += `
+                    <div class="cart-item">
+                        <div>
+                            <strong>${item.nombre}</strong><br>
+                            <small>$${item.precio}.00</small>
+                        </div>
+                        <i class="fas fa-trash" style="color:#e74c3c; cursor:pointer" onclick="eliminarDelCarrito(${index})"></i>
+                    </div>
+                `;
+            });
+
+            contador.innerText = carrito.length;
+            totalTxt.innerText = total;
+        }
+
+        function irAPagar() {
+            if(carrito.length === 0) {
+                alert("Tu carrito está vacío");
+                return;
+            }
+            alert("Redirigiendo a la pasarela de pago segura... Total a cobrar: $" + total);
+            // Aquí es donde conectarías con el link de Tiendanube o Mercado Pago
+        }
+    </script>
+</body>
+</html>

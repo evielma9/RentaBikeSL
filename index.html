@@ -1,321 +1,527 @@
 <!DOCTYPE html>
+
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>RentaBikeSanLuis - Movilidad Inteligente</title>
+
     
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
     
+
     <style>
+
         :root {
+
             --blanco: #ffffff;
+
             --verde: #2ecc71;
+
             --verde-oscuro: #27ae60;
+
             --amarillo: #f1c40f;
+
             --texto-oscuro: #2c3e50;
+
             --gris-claro: #f8f9fa;
+
             --sombra: 0 10px 30px rgba(0,0,0,0.08);
-            --rojo: #e74c3c;
+
         }
 
-        html { scroll-behavior: smooth; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--blanco); color: var(--texto-oscuro); line-height: 1.6; overflow-x: hidden; }
+
+
+        /* --- MEJORA: Smooth Scroll --- */
+
+        html {
+
+            scroll-behavior: smooth;
+
+        }
+
+
+
+        * {
+
+            margin: 0; padding: 0; box-sizing: border-box;
+
+            font-family: 'Poppins', sans-serif;
+
+        }
+
+
+
+        body { background-color: var(--blanco); color: var(--texto-oscuro); line-height: 1.6; }
+
         a { text-decoration: none; color: inherit; }
 
+
+
         /* --- NAVEGACIÓN --- */
+
         header {
+
             background: rgba(255, 255, 255, 0.95);
+
             backdrop-filter: blur(10px);
+
             box-shadow: var(--sombra);
+
             position: fixed; width: 100%; top: 0; z-index: 1000;
+
         }
+
+
 
         .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
         nav { display: flex; justify-content: space-between; align-items: center; height: 80px; }
 
+
+
         .logo { font-size: 1.5rem; font-weight: 700; color: var(--verde-oscuro); display: flex; align-items: center; gap: 10px; }
+
         .logo i { background: var(--verde-oscuro); padding: 8px; border-radius: 50%; color: var(--blanco); }
 
-        .nav-links { display: flex; gap: 25px; align-items: center; list-style: none; }
+
+
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+
         .nav-links a { font-weight: 500; transition: 0.3s; }
+
         .nav-links a:hover { color: var(--verde); }
 
-        /* Icono Carrito */
-        .cart-trigger {
-            position: relative;
-            cursor: pointer;
-            font-size: 1.4rem;
-            color: var(--texto-oscuro);
-            transition: 0.3s;
-        }
-        .cart-trigger:hover { color: var(--verde); }
-        #cart-count {
-            position: absolute;
-            top: -8px;
-            right: -10px;
-            background: var(--rojo);
-            color: white;
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 50%;
-            font-weight: 700;
-        }
 
-        /* --- SIDEBAR CARRITO --- */
-        .cart-sidebar {
-            position: fixed;
-            right: -400px;
-            top: 0;
-            width: 380px;
-            height: 100vh;
-            background: var(--blanco);
-            z-index: 1100;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-            transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-        }
-        .cart-sidebar.active { right: 0; }
-        .cart-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1050;
-            display: none;
-        }
-        .cart-overlay.active { display: block; }
 
-        .cart-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--gris-claro); padding-bottom: 15px; }
-        .close-cart { cursor: pointer; font-size: 1.5rem; }
-        
-        .cart-items-container { flex-grow: 1; overflow-y: auto; }
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--gris-claro);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-        .cart-item-info h4 { font-size: 0.9rem; margin-bottom: 4px; }
-        .cart-item-info p { color: var(--verde-oscuro); font-weight: 700; font-size: 0.85rem; }
-        .remove-item { color: var(--rojo); cursor: pointer; padding: 5px; }
+        .btn-reserva { background-color: var(--amarillo); padding: 10px 22px; border-radius: 50px; font-weight: 700; transition: 0.3s; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3); }
 
-        .cart-total {
-            border-top: 2px solid var(--gris-claro);
-            padding-top: 20px;
-            margin-top: 20px;
-        }
-        .total-row { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; }
+        .btn-reserva:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(241, 196, 15, 0.5); }
 
-        /* --- BOTONES --- */
-        .btn-add-cart {
-            background: var(--verde);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 15px;
-            transition: 0.3s;
-        }
-        .btn-add-cart:hover { background: var(--verde-oscuro); transform: scale(1.02); }
+
 
         /* --- HERO --- */
+
         .hero {
+
             height: 95vh;
+
             background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1950&q=80');
+
             background-size: cover; background-position: center;
+
             display: flex; align-items: center; justify-content: center; text-align: center; color: white;
+
         }
 
-        .hero-content h1 { font-size: 4rem; margin-bottom: 20px; }
-        .hero-content p { font-size: 1.4rem; margin-bottom: 35px; }
 
-        /* --- PRICING --- */
+
+        .hero-content h1 { font-size: 4rem; margin-bottom: 20px; text-shadow: 2px 2px 10px rgba(0,0,0,0.3); }
+
+        .hero-content p { font-size: 1.4rem; margin-bottom: 35px; opacity: 0.9; }
+
+
+
+        /* --- SECCIÓN CÓMO FUNCIONA --- */
+
+        .steps { padding: 100px 0; text-align: center; }
+
+        .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-top: 50px; }
+
+        .step-item i { font-size: 3rem; color: var(--verde); margin-bottom: 20px; }
+
+        .step-item h4 { margin-bottom: 10px; font-size: 1.3rem; }
+
+
+
+        /* --- PRECIOS (CARDS MODERNAS) --- */
+
         .pricing { padding: 100px 0; background-color: var(--gris-claro); text-align: center; }
+
         .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 50px; }
-        .card { background: var(--blanco); padding: 50px 40px; border-radius: 20px; box-shadow: var(--sombra); transition: 0.4s; }
-        .card:hover { transform: translateY(-10px); }
+
+        
+
+        .card {
+
+            background: var(--blanco); padding: 50px 40px; border-radius: 20px;
+
+            box-shadow: var(--sombra); transition: 0.4s; position: relative; overflow: hidden;
+
+        }
+
+        .card:hover { transform: translateY(-15px); }
+
+        .card i { font-size: 3.5rem; color: var(--verde); margin-bottom: 20px; }
+
         .price { font-size: 3rem; font-weight: 700; margin: 20px 0; }
 
-        /* --- WHATSAPP --- */
-        .whatsapp-btn { position: fixed; bottom: 30px; right: 30px; background-color: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 35px; z-index: 1000; }
+        .price span { font-size: 1rem; color: #888; }
+
+
+
+        /* --- WHATSAPP FLOTANTE --- */
+
+        .whatsapp-btn {
+
+            position: fixed; bottom: 30px; right: 30px;
+
+            background-color: #25d366; color: white;
+
+            width: 60px; height: 60px; border-radius: 50%;
+
+            display: flex; align-items: center; justify-content: center;
+
+            font-size: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+
+            z-index: 1000; transition: 0.3s;
+
+        }
+
+        .whatsapp-btn:hover { transform: scale(1.1); background-color: #128c7e; }
+
+
+
+        /* --- FORMULARIO --- */
+
+        .reservation { padding: 100px 0; }
+
+        .form-box { 
+
+            max-width: 700px; margin: 0 auto; padding: 50px; 
+
+            border-radius: 20px; background: var(--blanco);
+
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+
+            border: 1px solid #eee;
+
+        }
+
+        .form-group input, .form-group select {
+
+            width: 100%; padding: 15px; border: 1.5px solid #eee;
+
+            border-radius: 10px; transition: 0.3s; font-size: 1rem;
+
+        }
+
+        .form-group input:focus { border-color: var(--verde); outline: none; background: #f9fffb; }
+
+
+
+        .submit-btn {
+
+            width: 100%; padding: 18px; background: var(--verde); color: white;
+
+            border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.3s;
+
+        }
+
+        .submit-btn:hover { background: var(--verde-oscuro); letter-spacing: 1px; }
+
+
 
         @media (max-width: 768px) {
+
             .hero-content h1 { font-size: 2.5rem; }
-            .nav-links { display: none; }
-            .cart-sidebar { width: 100%; right: -100%; }
+
+            .nav-links { display: none; } /* En un proyecto real aquí pondrías un menú hamburguesa */
+
         }
+
     </style>
+
 </head>
+
 <body>
 
-    <div class="cart-overlay" id="overlay" onclick="toggleCart()"></div>
 
-    <a href="#" class="whatsapp-btn">
+
+    <a href="https://wa.me/tunumerodeis" class="whatsapp-btn" target="_blank">
+
         <i class="fab fa-whatsapp"></i>
+
     </a>
 
-    <div class="cart-sidebar" id="cartSidebar">
-        <div class="cart-title">
-            <h3><i class="fas fa-shopping-basket"></i> Mi Carrito</h3>
-            <div class="close-cart" onclick="toggleCart()"><i class="fas fa-times"></i></div>
-        </div>
-        
-        <div class="cart-items-container" id="cartItems">
-            </div>
 
-        <div class="cart-total">
-            <div class="total-row">
-                <span>Total:</span>
-                <span id="cartTotalPrice">$0.00</span>
-            </div>
-            <button class="submit-btn" style="border:none;" onclick="procesarPago()">Pagar Ahora</button>
-        </div>
-    </div>
 
     <header>
+
         <div class="container">
+
             <nav>
+
                 <div class="logo">
+
                     <i class="fas fa-bicycle"></i> RentaBikeSanLuis
+
                 </div>
+
                 <ul class="nav-links">
+
                     <li><a href="#inicio">Inicio</a></li>
+
+                    <li><a href="#pasos">Cómo Funciona</a></li>
+
                     <li><a href="#precios">Precios</a></li>
-                    <li class="cart-trigger" onclick="toggleCart()">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span id="cart-count">0</span>
-                    </li>
+
+                    <li><a href="#reservar" class="btn-reserva">Reservar Ahora</a></li>
+
                 </ul>
+
             </nav>
+
         </div>
+
     </header>
 
+
+
     <section class="hero" id="inicio">
+
         <div class="container hero-content" data-aos="zoom-in">
+
             <h1>San Luis en tus Manos</h1>
-            <p>Alquila una bicicleta o scooter en segundos.</p>
-            <a href="#precios" class="submit-btn" style="padding: 15px 40px;">Ver Flota</a>
+
+            <p>Alquila una bicicleta o scooter en segundos y empieza a explorar.</p>
+
+            <a href="#precios" class="submit-btn" style="padding: 15px 40px; text-decoration: none;">Ver Flota</a>
+
         </div>
+
     </section>
+
+
+
+    <section class="steps" id="pasos">
+
+        <div class="container">
+
+            <h2 style="font-size: 2.5rem;">Explora en 3 simples pasos</h2>
+
+            <div class="steps-grid">
+
+                <div class="step-item" data-aos="fade-up" data-aos-delay="100">
+
+                    <i class="fas fa-mobile-alt"></i>
+
+                    <h4>1. Reserva</h4>
+
+                    <p>Elige tu vehículo y horario desde nuestra web de forma segura.</p>
+
+                </div>
+
+                <div class="step-item" data-aos="fade-up" data-aos-delay="200">
+
+                    <i class="fas fa-map-marker-alt"></i>
+
+                    <h4>2. Recoge</h4>
+
+                    <p>Pasa por nuestro punto central en el centro histórico por tu equipo.</p>
+
+                </div>
+
+                <div class="step-item" data-aos="fade-up" data-aos-delay="300">
+
+                    <i class="fas fa-wind"></i>
+
+                    <h4>3. Disfruta</h4>
+
+                    <p>Recorre la ciudad a tu ritmo y devuélvela cuando termines.</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
 
     <section class="pricing" id="precios">
+
         <div class="container">
+
             <h2 style="font-size: 2.5rem;">Nuestras Tarifas</h2>
+
             <div class="pricing-grid">
+
                 <div class="card" data-aos="flip-left">
-                    <i class="fas fa-bicycle" style="font-size: 3.5rem; color: var(--verde);"></i>
+
+                    <i class="fas fa-bicycle"></i>
+
                     <h3>Bicicleta Urbana</h3>
+
                     <div class="price">$60 <span>/ hora</span></div>
+
                     <p><i class="fas fa-check"></i> Casco de seguridad</p>
-                    <button class="btn-add-cart" onclick="addToCart('Bicicleta Urbana', 60)">Añadir al Carrito</button>
+
+                    <p><i class="fas fa-check"></i> Soporte para celular</p>
+
                 </div>
-                
+
                 <div class="card" data-aos="flip-right" style="border-top: 5px solid var(--amarillo);">
-                    <i class="fas fa-bolt" style="color: var(--amarillo); font-size: 3.5rem;"></i>
+
+                    <i class="fas fa-bolt" style="color: var(--amarillo);"></i>
+
                     <h3>Scooter Pro</h3>
+
                     <div class="price">$80 <span>/ hora</span></div>
+
                     <p><i class="fas fa-check"></i> Autonomía de 30km</p>
-                    <button class="btn-add-cart" onclick="addToCart('Scooter Pro', 80)">Añadir al Carrito</button>
+
+                    <p><i class="fas fa-check"></i> Luces LED nocturnas</p>
+
                 </div>
+
             </div>
+
         </div>
+
     </section>
 
-    <footer style="background: #2c3e50; color: white; padding: 40px 0; text-align: center;">
-        <p>© 2026 RentaBike San Luis Río Colorado</p>
+
+
+    <section class="reservation" id="reservar">
+
+        <div class="container">
+
+            <div class="form-box" data-aos="fade-up">
+
+                <h2 style="text-align: center; margin-bottom: 30px;">Completa tu Reserva</h2>
+
+                <form id="reservationForm">
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+
+                        <label>Nombre Completo</label>
+
+                        <input type="text" id="nombre" placeholder="Tu nombre..." required>
+
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+
+                        <label>Vehículo</label>
+
+                        <select id="vehiculo" onchange="actualizarPrecio()" required>
+
+                            <option value="">Selecciona...</option>
+
+                            <option value="bicicleta">Bicicleta ($60)</option>
+
+                            <option value="scooter">Scooter ($80)</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group" style="display: flex; gap: 15px; margin-bottom: 25px;">
+
+                        <div style="flex: 1;">
+
+                            <label>Fecha</label>
+
+                            <input type="date" id="fecha" required>
+
+                        </div>
+
+                        <div style="flex: 1;">
+
+                            <label>Hora</label>
+
+                            <input type="time" id="hora" required>
+
+                        </div>
+
+                    </div>
+
+                    <div id="totalEstimado" style="font-weight: bold; color: var(--verde-oscuro); text-align: center; margin-bottom: 20px;"></div>
+
+                    <button type="submit" class="submit-btn">Confirmar Mi Viaje</button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <footer style="background: #2c3e50; color: white; padding: 60px 0; text-align: center;">
+
+        <div class="container">
+
+            <h3>RentaBikeSanLuis</h3>
+
+            <p style="opacity: 0.7; margin: 15px 0;">Transformando la forma en que te mueves.</p>
+
+            <div style="font-size: 1.5rem; gap: 20px; display: flex; justify-content: center;">
+
+                <i class="fab fa-instagram"></i>
+
+                <i class="fab fa-facebook"></i>
+
+                <i class="fab fa-twitter"></i>
+
+            </div>
+
+        </div>
+
     </footer>
 
+
+
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
     <script>
+
+        // Inicializar animaciones
+
         AOS.init({ duration: 1000, once: true });
 
-        // LÓGICA DEL CARRITO
-        let cart = JSON.parse(localStorage.getItem('rentabike_cart')) || [];
 
-        function toggleCart() {
-            document.getElementById('cartSidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
+
+        function actualizarPrecio() {
+
+            const v = document.getElementById('vehiculo').value;
+
+            const d = document.getElementById('totalEstimado');
+
+            d.innerHTML = v ? `Tarifa: $${v === 'bicicleta' ? '60' : '80'}.00 MXN / hora` : "";
+
         }
 
-        function addToCart(name, price) {
-            const item = {
-                id: Date.now(),
-                name: name,
-                price: price
-            };
-            cart.push(item);
-            updateCart();
-            
-            // Notificación visual rápida
-            const btn = event.target;
-            const originalText = btn.innerText;
-            btn.innerText = "¡Agregado!";
-            btn.style.background = "#27ae60";
-            setTimeout(() => {
-                btn.innerText = originalText;
-                btn.style.background = "#2ecc71";
-            }, 1000);
-        }
 
-        function removeItem(id) {
-            cart = cart.filter(item => item.id !== id);
-            updateCart();
-        }
 
-        function updateCart() {
-            localStorage.setItem('rentabike_cart', JSON.stringify(cart));
-            const cartItemsElement = document.getElementById('cartItems');
-            const cartCount = document.getElementById('cart-count');
-            const cartTotal = document.getElementById('cartTotalPrice');
-            
-            cartCount.innerText = cart.length;
-            
-            if (cart.length === 0) {
-                cartItemsElement.innerHTML = '<p style="text-align:center; margin-top:20px; color:#999;">Tu carrito está vacío</p>';
-                cartTotal.innerText = '$0.00';
-                return;
-            }
+        document.getElementById('reservationForm').addEventListener('submit', function(e) {
 
-            let total = 0;
-            cartItemsElement.innerHTML = cart.map(item => {
-                total += item.price;
-                return `
-                    <div class="cart-item">
-                        <div class="cart-item-info">
-                            <h4>${item.name}</h4>
-                            <p>$${item.price}.00 MXN</p>
-                        </div>
-                        <div class="remove-item" onclick="removeItem(${item.id})">
-                            <i class="fas fa-trash"></i>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            e.preventDefault();
 
-            cartTotal.innerText = `$${total}.00`;
-        }
+            alert("¡Reserva procesada con éxito! Revisa tu WhatsApp para la confirmación.");
 
-        function procesarPago() {
-            if (cart.length === 0) return alert("Añade algo al carrito primero");
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
-            alert(`Redirigiendo a pasarela segura...\nTotal a pagar: $${total}.00 MXN`);
-            // Aquí integrarías el link de Mercado Pago o Stripe
-        }
+            this.reset();
 
-        // Cargar carrito al iniciar
-        updateCart();
+            actualizarPrecio();
+
+        });
+
     </script>
+
 </body>
+
 </html>
